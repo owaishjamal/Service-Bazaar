@@ -2,8 +2,9 @@ import { createServerClient } from "@/lib/supabase";
 
 export const runtime = "nodejs";
 
-export async function GET(_: Request, { params }: { params: { serviceId: string } }) {
+export async function GET(_: Request, { params }: { params: Promise<{ serviceId: string }> }) {
   try {
+    const { serviceId } = await params;
     const supabase = await createServerClient();
     const { data: offers, error } = await supabase
       .from("offers")
@@ -13,7 +14,7 @@ export async function GET(_: Request, { params }: { params: { serviceId: string 
           name
         )
       `)
-      .eq("service_id", params.serviceId)
+      .eq("service_id", serviceId)
       .order("trust_score", { ascending: false })
       .order("rating", { ascending: false });
 
