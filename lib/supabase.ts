@@ -8,21 +8,28 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error("Missing Supabase environment variables. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY");
 }
 
-// For development: Allow self-signed certificates (only in dev mode)
-// This is a workaround for SSL certificate issues in some development environments
-if (process.env.NODE_ENV === 'development' && typeof process !== 'undefined') {
+// Only set TLS rejection if explicitly enabled via environment variable
+// This prevents the warning in production while allowing dev workarounds
+// To enable: set ALLOW_INSECURE_TLS=true in your .env.local (NOT recommended for production)
+if (process.env.ALLOW_INSECURE_TLS === 'true' && typeof process !== 'undefined' && process.env.NODE_ENV === 'development') {
   // @ts-ignore - Node.js global
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+  console.warn('⚠️  TLS certificate verification is disabled. This should only be used in development.');
 }
 
 // Server-side client (for API routes)
 export async function createServerClient() {
   const cookieStore = await cookies();
+  
+  // Create Supabase client with retry logic
   const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
       detectSessionInUrl: false,
+    },
+    db: {
+      schema: 'public',
     },
   });
 
@@ -95,4 +102,37 @@ export async function createServerClient() {
 // Client-side client (for browser)
 export function createBrowserClient() {
   return createClient(supabaseUrl, supabaseAnonKey);
+}
+
+// Helper function to retry Supabase operations on network errors
+export async function withRetry<T>(
+  operation: () => Promise<T>,
+  maxRetries = 3,
+  delay = 1000
+): Promise<T> {
+  let lastError: Error | null = null;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error: any) {
+      lastError = error;
+      
+      // Check if it's a network error that we should retry
+      const isNetworkError = 
+        error?.code === 'UND_ERR_SOCKET' ||
+        error?.message?.includes('fetch failed') ||
+        error?.message?.includes('ECONNRESET') ||
+        error?.message?.includes('ETIMEDOUT');
+      
+      if (!isNetworkError || attempt === maxRetries) {
+        throw error;
+      }
+      
+      // Wait before retrying (exponential backoff)
+      await new Promise(resolve => setTimeout(resolve, delay * attempt));
+    }
+  }
+  
+  throw lastError || new Error('Operation failed after retries');
 }
