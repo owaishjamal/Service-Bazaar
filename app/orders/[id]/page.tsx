@@ -53,7 +53,7 @@ const mockEvents = [
 
 const mockMessages = [
   { id: "1", sender: "buyer", message: "When can we expect the first milestone?", timestamp: "2024-01-15T10:30:00Z" },
-  { id: "2", sender: "vendor", message: "I'll submit the initial review by tomorrow evening.", timestamp: "2024-01-15T10:35:00Z" },
+  { id: "2", sender: "vendor", message: "I&apos;ll submit the initial review by tomorrow evening.", timestamp: "2024-01-15T10:35:00Z" },
   { id: "3", sender: "buyer", message: "Great! Looking forward to it.", timestamp: "2024-01-15T10:40:00Z" },
 ];
 

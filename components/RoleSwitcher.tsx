@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { User, Store, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-export type UserRole = "customer" | "vendor" | "admin";
+import { UserRole } from "@/lib/auth";
 
 interface RoleSwitcherProps {
   onRoleChange?: (role: UserRole) => void;
@@ -18,7 +17,7 @@ export function RoleSwitcher({ onRoleChange }: RoleSwitcherProps) {
 
   useEffect(() => {
     const stored = localStorage.getItem("dev-role") as UserRole | null;
-    if (stored && ["customer", "vendor", "admin"].includes(stored)) {
+    if (stored && ["customer", "vendor", "seller", "admin"].includes(stored)) {
       setRole(stored);
     }
   }, []);
@@ -93,12 +92,12 @@ export function useRole(): UserRole {
 
   useEffect(() => {
     const stored = localStorage.getItem("dev-role") as UserRole | null;
-    if (stored && ["customer", "vendor", "admin"].includes(stored)) {
+    if (stored && ["customer", "vendor", "seller", "admin"].includes(stored)) {
       setRole(stored);
     }
     const handleStorageChange = () => {
       const updated = localStorage.getItem("dev-role") as UserRole | null;
-      if (updated && ["customer", "vendor", "admin"].includes(updated)) {
+      if (updated && ["customer", "vendor", "seller", "admin"].includes(updated)) {
         setRole(updated);
       }
     };

@@ -1,7 +1,7 @@
 import { createServerClient } from "./supabase";
 import { cookies } from "next/headers";
 
-export type UserRole = "customer" | "vendor" | "admin";
+export type UserRole = "customer" | "vendor" | "seller" | "admin";
 
 export interface User {
   id: string;
