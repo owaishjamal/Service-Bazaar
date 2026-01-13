@@ -13,9 +13,10 @@ async function getService(id: string) {
   return r.json();
 }
 
-export default async function ComparePage({ params }: { params: { id: string } }) {
-  const s = await getService(params.id);
-  const offers = await getOffers(params.id);
+export default async function ComparePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const s = await getService(id);
+  const offers = await getOffers(id);
 
   return (
     <div className="space-y-4">
@@ -51,7 +52,7 @@ export default async function ComparePage({ params }: { params: { id: string } }
         ))}
       </div>
 
-      <Link className="underline text-sm" href={`/service/${params.id}`}>
+      <Link className="underline text-sm" href={`/service/${id}`}>
         Back
       </Link>
     </div>
