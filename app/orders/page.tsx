@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -18,11 +18,7 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  async function checkAuth() {
+  const checkAuth = useCallback(async () => {
     try {
       const res = await fetch("/api/auth/me");
       const data = await res.json();
@@ -45,7 +41,11 @@ export default function OrdersPage() {
       console.error("Auth check error:", error);
       router.push("/login");
     }
-  }
+  }, [router]);
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   async function loadOrders() {
     try {
@@ -76,7 +76,7 @@ export default function OrdersPage() {
 
       {orders.length === 0 ? (
         <div className="bg-gradient-to-br from-card/50 to-card rounded-xl border-2 border-border p-12 text-center backdrop-blur-sm">
-          <p className="text-muted-foreground text-lg mb-6">You haven't placed any orders yet.</p>
+          <p className="text-muted-foreground text-lg mb-6">You haven&apos;t placed any orders yet.</p>
           <Link
             href="/"
             className="inline-block px-8 py-4 bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700 text-primary-foreground rounded-xl font-semibold shadow-lg shadow-cyan-500/30 hover:shadow-xl transition-all hover-lift"

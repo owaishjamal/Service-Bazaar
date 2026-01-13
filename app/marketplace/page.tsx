@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ServiceCard } from "@/components/ServiceCard";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -39,26 +39,7 @@ export default function MarketplacePage() {
     fetchServices();
   }, []);
 
-  useEffect(() => {
-    filterServices();
-  }, [services, searchQuery, selectedCategory, priceRange]);
-
-  const fetchServices = async () => {
-    try {
-      const response = await fetch("/api/services");
-      if (response.ok) {
-        const data = await response.json();
-        setServices(data);
-        setFilteredServices(data);
-      }
-    } catch (error) {
-      console.error("Error fetching services:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filterServices = () => {
+  const filterServices = useCallback(() => {
     let filtered = [...services];
 
     // Search filter
@@ -84,6 +65,25 @@ export default function MarketplacePage() {
     );
 
     setFilteredServices(filtered);
+  }, [services, searchQuery, selectedCategory, priceRange]);
+
+  useEffect(() => {
+    filterServices();
+  }, [filterServices]);
+
+  const fetchServices = async () => {
+    try {
+      const response = await fetch("/api/services");
+      if (response.ok) {
+        const data = await response.json();
+        setServices(data);
+        setFilteredServices(data);
+      }
+    } catch (error) {
+      console.error("Error fetching services:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCompareChange = (serviceId: string, checked: boolean) => {
