@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface ProgressRingProps {
   progress: number;
@@ -22,10 +22,15 @@ export function ProgressRing({
   animated = true,
 }: ProgressRingProps) {
   const [displayProgress, setDisplayProgress] = useState(0);
+  const displayProgressRef = useRef(displayProgress);
   
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (displayProgress / 100) * circumference;
+
+  useEffect(() => {
+    displayProgressRef.current = displayProgress;
+  }, [displayProgress]);
 
   useEffect(() => {
     if (!animated) {
@@ -36,7 +41,7 @@ export function ProgressRing({
     // Animate progress
     const duration = 1500;
     const startTime = performance.now();
-    const startProgress = displayProgress;
+    const startProgress = displayProgressRef.current;
 
     const animate = (currentTime: number) => {
       const elapsed = currentTime - startTime;

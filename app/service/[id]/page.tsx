@@ -229,7 +229,7 @@ export default function ServiceDetailPage({ params }: { params: Promise<{ id: st
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <CheckCircle className="h-5 w-5 text-green-500" />
-                      What's Included
+                      What&apos;s Included
                     </CardTitle>
                   </CardHeader>
                   <CardContent>

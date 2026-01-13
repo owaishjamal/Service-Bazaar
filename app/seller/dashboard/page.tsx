@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -30,11 +30,7 @@ export default function SellerDashboard() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  async function checkAuth() {
+  const checkAuth = useCallback(async () => {
     const res = await fetch("/api/auth/me");
     const data = await res.json();
     
@@ -45,7 +41,11 @@ export default function SellerDashboard() {
 
     setUser(data.user);
     loadData();
-  }
+  }, [router]);
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   async function loadData() {
     try {

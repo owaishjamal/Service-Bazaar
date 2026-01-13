@@ -109,13 +109,7 @@ export function VoiceSearchModal({
   const [transcript, setTranscript] = useState("");
   const [isListening, setIsListening] = useState(false);
 
-  useEffect(() => {
-    if (isOpen) {
-      startListening();
-    }
-  }, [isOpen]);
-
-  const startListening = () => {
+  const startListening = useCallback(() => {
     if (!("webkitSpeechRecognition" in window || "SpeechRecognition" in window)) {
       onClose();
       return;
@@ -155,7 +149,13 @@ export function VoiceSearchModal({
     };
 
     recognition.start();
-  };
+  }, [onClose, onResult]);
+
+  useEffect(() => {
+    if (isOpen) {
+      startListening();
+    }
+  }, [isOpen, startListening]);
 
   if (!isOpen) return null;
 

@@ -5,7 +5,18 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error("Missing Supabase environment variables. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY");
+  const missingVars = [];
+  if (!supabaseUrl) missingVars.push("NEXT_PUBLIC_SUPABASE_URL");
+  if (!supabaseAnonKey) missingVars.push("NEXT_PUBLIC_SUPABASE_ANON_KEY");
+  
+  throw new Error(
+    `Missing Supabase environment variables: ${missingVars.join(", ")}\n` +
+    `Please create a .env.local file in the project root with:\n` +
+    `NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url\n` +
+    `NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key\n\n` +
+    `You can copy .env.example to .env.local and fill in your values.\n` +
+    `Get your credentials from: https://app.supabase.com/project/_/settings/api`
+  );
 }
 
 // Only set TLS rejection if explicitly enabled via environment variable
