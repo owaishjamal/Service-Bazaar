@@ -7,6 +7,7 @@ interface TiltCardProps {
   className?: string;
   glareEnabled?: boolean;
   tiltMaxAngle?: number;
+  style?: React.CSSProperties;
 }
 
 export function TiltCard({
@@ -14,6 +15,7 @@ export function TiltCard({
   className = "",
   glareEnabled = true,
   tiltMaxAngle = 10,
+  style,
 }: TiltCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [transform, setTransform] = useState("");
@@ -48,7 +50,7 @@ export function TiltCard({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       className={`relative transition-transform duration-200 ease-out ${className}`}
-      style={{ transform }}
+      style={{ ...style, transform }}
     >
       {children}
       
